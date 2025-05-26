@@ -225,8 +225,8 @@ const Plane = forwardRef(
     const keys = useRef({});
     const { scene } = useGLTF("/models/plane.glb");
 
-    const MAX_SPEED = 1.2;
-    const ROTATION_SPEED = 0.03;
+    const MAX_SPEED = 1;
+    const ROTATION_SPEED = 0.02;
 
     const fireBullet = () => {
       if (!group.current) return;
@@ -294,7 +294,6 @@ const Plane = forwardRef(
       const forward = new THREE.Vector3();
       plane.getWorldDirection(forward);
       plane.position.addScaledVector(forward, -speed);
-      console.log(x, y, distance, speed);
       // === 🔫 FIRE ===
       if (keys.current["fire"] || controls["fire"]) {
         fireBullet();
