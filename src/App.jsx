@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
@@ -31,7 +30,8 @@ export default function App() {
   const handleControl = (key, isPressed) => {
     setControls((prev) => ({ ...prev, [key.toLowerCase()]: isPressed }));
   };
-  
+
+  const joystick = useRef({ x: 0, y: 0, distance: 0 });
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function App() {
         <ambientLight />
         <directionalLight position={[5, 5, 5]} />
         <Environment preset="sunset" />
-        <Game controls={controls} />
+        <Game controls={controls} joystick={joystick.current} />
       </Canvas>
 
       {isMobileLandscape ? (
@@ -52,6 +52,11 @@ export default function App() {
               stickColor="rgba(100, 100, 255, 0.8)"
               move={(e) => {
                 handleControl("ArrowUp", true);
+                // console.log(e);
+                joystick.current.x = e.x;
+                joystick.current.y = e.y;
+                joystick.current.distance = e.distance;
+
                 // Normalize angle to determine direction
                 const { direction } = e;
                 // console.log("Joystick direction:", e);
@@ -61,9 +66,11 @@ export default function App() {
 
                 handleControl("ArrowRight", direction === "RIGHT");
                 handleControl("ArrowLeft", direction === "LEFT");
-              
               }}
               stop={() => {
+                joystick.current.x = 0;
+                joystick.current.y = 0;
+                joystick.current.distance = 0;
                 // Reset controls when joystick is released
                 handleControl("ArrowUp", false);
                 handleControl("ArrowDown", false);
@@ -75,13 +82,13 @@ export default function App() {
 
           {/* Ascend/Descend + Fire */}
           <div style={styles.rightControls}>
-            <button
+            {/* <button
               style={styles.btn}
               onPointerDown={() => handleControl("x", true)}
               onPointerUp={() => handleControl("x", false)}
               onPointerLeave={() => handleControl("x", false)}
             >
-              ⬆️
+              ⬇️
             </button>
             <button
               style={styles.btn}
@@ -89,8 +96,9 @@ export default function App() {
               onPointerUp={() => handleControl("s", false)}
               onPointerLeave={() => handleControl("s", false)}
             >
-              ⬇️
-            </button>
+              ⬆️
+            </button> */}
+
             <button
               style={styles.fireBtn}
               onPointerDown={() => handleControl("fire", true)}
@@ -117,7 +125,7 @@ const styles = {
     position: "absolute",
     bottom: 20,
     left: 20,
-    zIndex: 1000,
+    zIndex: 100,
   },
 
   rightControls: {
@@ -126,11 +134,9 @@ const styles = {
     alignItems: "center",
     gap: 10,
     position: "absolute",
-    bottom: 20,
+    bottom: 35,
     right: 20,
     zIndex: 1000,
-    right: 10,
-    userSelect: "none",
   },
   btn: {
     width: "4rem",
